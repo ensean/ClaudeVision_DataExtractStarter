@@ -67,7 +67,13 @@ def extract_invoice_info(image_path):
             "maxTokens": 4096,
         },
         toolConfig={
-            "tools": tools
+            "tools": tools,
+            # forece use of the tool
+            "toolChoice": {
+                "tool": {
+                    "name": "extract_invoice_info"
+                }
+            }
         }
     )
 
