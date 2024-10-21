@@ -9,5 +9,5 @@ Leverage Bedrock converse API invoke Claude 3 extract structure data from invoic
 
 #### Refs
 
-1.[JSON output with claude tool use](https://docs.anthropic.com/en/docs/build-with-claude/tool-use#json-output) 
-1.[Extract structure data with tool use](https://github.com/anthropics/anthropic-cookbook/blob/main/tool_use/extracting_structured_json.ipynb)
+1. [JSON output with claude tool use](https://docs.anthropic.com/en/docs/build-with-claude/tool-use#json-output) 
+1. [Extract structure data with tool use](https://github.com/anthropics/anthropic-cookbook/blob/main/tool_use/extracting_structured_json.ipynb)
