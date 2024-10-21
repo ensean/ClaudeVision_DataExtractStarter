@@ -1,30 +1,29 @@
 import os
 import json
 import base64
-from anthropic import Anthropic
-import configparser
-
-config = configparser.ConfigParser()
-config.read(os.path.join(os.path.dirname(__file__), '.settings'))
-api_key = config['Anthropic']['api_key']
-anthropic = Anthropic(api_key=api_key)
+import boto3
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+        return image_file.read()
 
+# only one demo tool
 tools = [
     {
-        "name": "extract_invoice_info",
-        "description": "Extracts key information from the invoice.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "invoice_number": {"type": "string", "description": "The invoice number."},
-                "invoice_date": {"type": "string", "description": "The date of the invoice."},
-                "total_amount": {"type": "string", "description": "The total amount on the invoice. Don't include the $ sign"}
-            },
-            "required": ["invoice_number", "invoice_date", "total_amount"]
+        "toolSpec": {
+            "name": "extract_invoice_info",
+            "description": "Extracts key information from the invoice.",
+            "inputSchema": {
+                "json": {
+                "type": "object",
+                    "properties": {
+                        "invoice_number": {"type": "string", "description": "The invoice number."},
+                        "invoice_date": {"type": "string", "description": "The date of the invoice. The date should be in yyyy-MM-dd format"},
+                        "total_amount": {"type": "string", "description": "The total amount on the invoice. Only include numbers."}
+                    },
+                    "required": ["invoice_number", "invoice_date", "total_amount"]
+                }
+            }
         }
     }
 ]
@@ -41,40 +40,44 @@ def extract_invoice_info(image_path):
     Use the extract_invoice_info tool to provide the extracted information.  If the image is not an invoice or data missing still return using the tool with values of null.
 
     Here's the invoice image:
-    [IMAGE]
     """
-
-    response = anthropic.messages.create(
-        model="claude-3-5-sonnet-20240620",
-        max_tokens=1000,
-        tools=tools,
+    # create bedrock runtime client and inference with bedrock converse api
+    br = boto3.client('bedrock-runtime', region_name='us-west-2')
+    response = br.converse(
+        modelId='anthropic.claude-3-sonnet-20240229-v1:0',
         messages=[
             {
                 "role": "user",
                 "content": [
                     {
-                        "type": "text",
-                        "text": prompt
+                        "text": prompt,
                     },
                     {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "image/jpeg",
-                            "data": base64_image
+                        "image": {
+                            "format": "jpeg",
+                            "source": {
+                                "bytes": base64_image
+                            }
                         }
                     }
                 ]
             }
-        ]
+        ],
+        inferenceConfig={
+            "maxTokens": 4096,
+        },
+        toolConfig={
+            "tools": tools
+        }
     )
 
     return response
 
 def parse_claude_response(response):
-    for content in response.content:
-        if content.type == 'tool_use':
-            return content.input
+    for content in response['output']['message']['content']:
+        if 'toolUse' in content.keys():
+            return content['toolUse']['input']
+    # no msg extracted
     return None
         
 
