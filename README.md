@@ -7,6 +7,16 @@ Leverage Bedrock converse API invoke Claude 3 extract structure data from invoic
 1. Invoke claude 3 with prompt and invoice images
 
 
+#### Results
+
+* Pros
+    * can extract desired data from well formatted documents
+
+* Cons
+    * Can not handle sum up operation for invoice without total amount
+    * Can not infer the transaction date
+    * Can not handle large invoice, claude image input is limited to 8000x8000 pixel
+
 #### Refs
 
 1. [JSON output with claude tool use](https://docs.anthropic.com/en/docs/build-with-claude/tool-use#json-output) 
