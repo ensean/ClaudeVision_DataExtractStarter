@@ -24,7 +24,7 @@ tools = [
                                 "type": "string", 
                                 "description": "The total amount on the invoice. Only include numbers."
                             },
-                        "currency": {"type": "string", "description": "The symbol of the currency, such as CNY/USD/HKD etc."}
+                        "currency": {"type": "string", "description": "The symbol of the currency, such as CNY/USD/HKD/KRW etc."}
                     },
                     "required": ["expense_type", "invoice_number", "invoice_date", "total_amount", "currency"]
                 }
@@ -100,7 +100,7 @@ def save_to_json(data, output_file):
         json.dump(data, f, indent=2)
 
 def main():
-    image_path = './InvoiceImages/case002.jpg'
+    image_path = './InvoiceImages/case007.jpg'
     output_file = 'invoice_extract.json'
     
     claude_response = extract_invoice_info(image_path)
