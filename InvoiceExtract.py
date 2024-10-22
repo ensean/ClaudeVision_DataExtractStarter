@@ -17,11 +17,16 @@ tools = [
                 "json": {
                 "type": "object",
                     "properties": {
+                        "expense_type": {"type": "string", "description": "The expense types, ONLY choose in hotel, food, transportation and others"},
                         "invoice_number": {"type": "string", "description": "The invoice number."},
-                        "invoice_date": {"type": "string", "description": "The date of the invoice. The date should be in yyyy-MM-dd format"},
-                        "total_amount": {"type": "string", "description": "The total amount on the invoice. Only include numbers."}
+                        "invoice_date": {"type": "string", "description": "The date of the invoice. The date should be in yyyy-MM-dd format."},
+                        "total_amount": {
+                                "type": "string", 
+                                "description": "The total amount on the invoice. Only include numbers."
+                            },
+                        "currency": {"type": "string", "description": "The symbol of the currency, such as CNY/USD/HKD etc."}
                     },
-                    "required": ["invoice_number", "invoice_date", "total_amount"]
+                    "required": ["expense_type", "invoice_number", "invoice_date", "total_amount", "currency"]
                 }
             }
         }
@@ -36,6 +41,9 @@ def extract_invoice_info(image_path):
     1. Invoice Number
     2. Invoice Date
     3. Total Amount
+    4. Expense type
+    5. Currency
+  
 
     Use the extract_invoice_info tool to provide the extracted information.  If the image is not an invoice or data missing still return using the tool with values of null.
 
@@ -92,7 +100,7 @@ def save_to_json(data, output_file):
         json.dump(data, f, indent=2)
 
 def main():
-    image_path = './InvoiceImages/CleaningInvoice.jpg'
+    image_path = './InvoiceImages/case002.jpg'
     output_file = 'invoice_extract.json'
     
     claude_response = extract_invoice_info(image_path)
